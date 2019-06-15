@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,14 +35,33 @@ namespace AuthenticationService
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if (environmentName == "Development")
+            // if (environmentName == "Development")
+            // {
+            //     builder.AddDeveloperSigningCredential();
+            // }
+            // else
+            // {
+            //     throw new Exception("need to configure key material");
+            // }
+
+            
+            var certificateRelativePath = Configuration.GetValue<string>("SigningCredential:CertificatePath");
+            var certificatePassword = Configuration.GetValue<string>("SigningCredential:Password");
+
+            if(string.IsNullOrWhiteSpace(certificateRelativePath) || string.IsNullOrWhiteSpace(certificatePassword))
             {
-                builder.AddDeveloperSigningCredential();
+                throw new Exception("Invalid SigningCredential configuration: both CertificatePath and Password must be configured.");
             }
-            else
+
+            var certificatePath = System.IO.Path.Combine(Environment.CurrentDirectory, certificateRelativePath);
+
+            if(!System.IO.File.Exists(certificatePath))
             {
-                throw new Exception("need to configure key material");
+                throw new Exception($"Invalid SigningCredential configuration. \"CertificatePath\" points to a non existing file: {certificatePath}");
             }
+
+            var signingCertificate = new X509Certificate2(certificatePath, certificatePassword);
+            builder.AddSigningCredential(signingCertificate);
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
