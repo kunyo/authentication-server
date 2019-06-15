@@ -19,6 +19,10 @@ namespace AuthenticationService
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+            .ConfigureAppConfiguration(builder =>
+            {
+                builder.AddJsonFile("appsettings.json", optional: false);
+            })
+            .UseStartup<Startup>();
     }
 }
