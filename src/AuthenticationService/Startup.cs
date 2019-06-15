@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace AuthenticationService
 {
@@ -34,34 +27,24 @@ namespace AuthenticationService
 
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
-            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            // if (environmentName == "Development")
-            // {
-            //     builder.AddDeveloperSigningCredential();
-            // }
-            // else
-            // {
-            //     throw new Exception("need to configure key material");
-            // }
-
-            
+            // Validate certificate settings
             var certificateRelativePath = Configuration.GetValue<string>("SigningCredential:CertificatePath");
             var certificatePassword = Configuration.GetValue<string>("SigningCredential:Password");
-
-            if(string.IsNullOrWhiteSpace(certificateRelativePath) || string.IsNullOrWhiteSpace(certificatePassword))
+            if (string.IsNullOrWhiteSpace(certificateRelativePath) || string.IsNullOrWhiteSpace(certificatePassword))
             {
                 throw new Exception("Invalid SigningCredential configuration: both CertificatePath and Password must be configured.");
             }
 
             var certificatePath = System.IO.Path.Combine(Environment.CurrentDirectory, certificateRelativePath);
-
-            if(!System.IO.File.Exists(certificatePath))
+            if (!System.IO.File.Exists(certificatePath))
             {
                 throw new Exception($"Invalid SigningCredential configuration. \"CertificatePath\" points to a non existing file: {certificatePath}");
             }
 
+            // Unprotect certificate
             var signingCertificate = new X509Certificate2(certificatePath, certificatePassword);
             builder.AddSigningCredential(signingCertificate);
+
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -80,6 +63,7 @@ namespace AuthenticationService
 
             app.UseHttpsRedirection();
             app.UseIdentityServer();
+
             //app.UseMvc();
         }
     }
