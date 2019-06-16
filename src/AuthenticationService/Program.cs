@@ -17,12 +17,30 @@ namespace AuthenticationService
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration(builder =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args){
+            IConfiguration configuration;
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json", optional: false);
+            configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
+            configuration = configurationBuilder.Build();
+        
+            var webCertificateConfig = configuration.GetSection("WebCertificate").Get<CertificateConfigurationData>();
+            var webCertificate = AuthenticationServiceUtils.LoadX509Certificate2(webCertificateConfig);
+
+            var webServerConfig = configuration.GetSection("WebServer").Get<WebServerConfigurationData>();
+            var listenAddr = webServerConfig.Hostname != null && webServerConfig.Hostname == "*"? System.Net.IPAddress.Any : System.Net.IPAddress.Parse(webServerConfig.Hostname);
+            return WebHost.CreateDefaultBuilder(args)
+            .UseConfiguration(configuration)
+            .UseKestrel(server =>
             {
-                builder.AddJsonFile("appsettings.json", optional: false);
+                server.Listen(
+                    address: listenAddr, 
+                    port: (int)webServerConfig.Port, 
+                    configure: listen => listen.UseHttps(webCertificate)
+                );
             })
             .UseStartup<Startup>();
+        }
+            
     }
 }

@@ -27,24 +27,11 @@ namespace AuthenticationService
 
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
-            // Validate certificate settings
-            var certificateRelativePath = Configuration.GetValue<string>("SigningCredential:CertificatePath");
-            var certificatePassword = Configuration.GetValue<string>("SigningCredential:Password");
-            if (string.IsNullOrWhiteSpace(certificateRelativePath) || string.IsNullOrWhiteSpace(certificatePassword))
-            {
-                throw new Exception("Invalid SigningCredential configuration: both CertificatePath and Password must be configured.");
-            }
-
-            var certificatePath = System.IO.Path.Combine(Environment.CurrentDirectory, certificateRelativePath);
-            if (!System.IO.File.Exists(certificatePath))
-            {
-                throw new Exception($"Invalid SigningCredential configuration. \"CertificatePath\" points to a non existing file: {certificatePath}");
-            }
-
-            // Unprotect certificate
-            var signingCertificate = new X509Certificate2(certificatePath, certificatePassword);
-            builder.AddSigningCredential(signingCertificate);
-
+            // Configure the certificate used to signin OAUTH2 Tokens
+            var signingCredentialConfig = Configuration.GetSection("SigningCredential").Get<CertificateConfigurationData>();
+            var signingCredential = AuthenticationServiceUtils.LoadX509Certificate2(signingCredentialConfig);
+            builder.AddSigningCredential(signingCredential);
+            
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

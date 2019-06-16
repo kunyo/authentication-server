@@ -11,7 +11,7 @@ namespace AuthenticationService.SmokeTests
 {
     public class AuthenticationServiceTests : IDisposable
     {
-        private const string ServerBaseUrl = "https://localhost:44332";
+        private const string ServerBaseUrl = "https://localhost:44331";
         private const string TestClientId = "client-1";
         private const string TestClientSecret = "client-1-secret";
         private readonly HttpClientHandler httpClientHandler;
