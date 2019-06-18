@@ -16,12 +16,15 @@ DOCKER_LOGIN_CMD="$(aws ecr get-login --profile $AWS_PROFILE --region $AWS_REGIO
 
 # Tag the image with the repository url
 echo "Tagging repository"
-docker tag "$1" "$ECR_REPOSITORY_URI"
+docker tag "$1" "$ECR_REPOSITORY_URI:latest"
 
 # Push the image to the repository
 echo "Pushing the image to ECR"
 $DOCKER_LOGIN_CMD
 docker push "$ECR_REPOSITORY_URI"
+
+# Remove the image copy created by the taggin operation
+docker rmi "$ECR_REPOSITORY_URI:latest"
 
 # Stop running tasks
 tasks=$(\
