@@ -32,7 +32,7 @@ namespace AuthenticationService
             var signingCredential = AuthenticationServiceUtils.LoadX509Certificate2(signingCredentialConfig);
             builder.AddSigningCredential(signingCredential);
             
-            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
