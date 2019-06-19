@@ -11,18 +11,19 @@ namespace AuthenticationService.SmokeTests
 {
     public class AuthenticationServiceTests : IDisposable
     {
-        private const string ServerBaseUrl = "https://localhost:44331";
         private const string TestClientId = "client-1";
         private const string TestClientSecret = "client-1-secret";
+        private readonly TestConfiguration configuration;
         private readonly HttpClientHandler httpClientHandler;
         private readonly HttpClient client;
 
         public AuthenticationServiceTests()
         {
+            this.configuration = TestConfiguration.Current;
             this.httpClientHandler = new HttpClientHandler();
             this.httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
             this.client = new HttpClient(httpClientHandler);
-            this.client.BaseAddress = new Uri(ServerBaseUrl);
+            this.client.BaseAddress = new Uri(configuration.BaseUrl);
         }
 
         public void Dispose()
@@ -72,7 +73,7 @@ namespace AuthenticationService.SmokeTests
             Assert.Equal(TestClientId, jsonResponse.client_id);
             Assert.True(jsonResponse.exp > 0);
             Assert.Equal("local", jsonResponse.idp);
-            Assert.Equal(ServerBaseUrl, jsonResponse.iss);
+            Assert.Equal(configuration.BaseUrl, jsonResponse.iss);
             Assert.Equal("test-api", jsonResponse.scope);
             Assert.Equal("81f92af1-1874-4dec-9f32-e1acade9bec5", jsonResponse.sub);
         }
