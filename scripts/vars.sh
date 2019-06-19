@@ -1,6 +1,7 @@
 export KEY_DIR="$(pwd)"
 export KEY_EXPIRE=3650
 export KEY_SIZE=2048
+
 export KEY_COUNTRY="US"
 export KEY_PROVINCE="CA"
 export KEY_CITY="SanFrancisco"

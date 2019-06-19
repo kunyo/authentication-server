@@ -20,7 +20,7 @@ cd "$KEY_DIR/$KEY_CN"
 openssl genrsa -out "$KEY_CN.key" $KEY_SIZE
 
 # Creates a self signed x509 certificate
-openssl req -batch -x509 -new -nodes -key "$KEY_CN.key" -out "$KEY_CN.pem" -days $KEY_EXPIRE
+openssl req -batch -x509 -new -nodes -key "$KEY_CN.key" -out "$KEY_CN.crt" -days $KEY_EXPIRE
 
 echo "CA created"
 exit 0
