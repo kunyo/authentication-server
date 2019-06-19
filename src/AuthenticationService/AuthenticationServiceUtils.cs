@@ -7,12 +7,12 @@ namespace AuthenticationService
     {
         public static X509Certificate2 LoadX509Certificate2(CertificateConfigurationData src)
         {
-            if (string.IsNullOrWhiteSpace(src.CertificatePath) || string.IsNullOrWhiteSpace(src.Password))
+            if (string.IsNullOrWhiteSpace(src.Path) || string.IsNullOrWhiteSpace(src.Password))
             {
                 throw new Exception("Invalid certificate configuration data: both CertificatePath and Password must be configured.");
             }
 
-            var certAbsolutePath = System.IO.Path.Combine(Environment.CurrentDirectory, src.CertificatePath);
+            var certAbsolutePath = System.IO.Path.Combine(Environment.CurrentDirectory, src.Path);
             if (!System.IO.File.Exists(certAbsolutePath))
             {
                 throw new Exception($"Invalid certificate configuration data. \"CertificatePath\" points to a non existing file: {certAbsolutePath}");

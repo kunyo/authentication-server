@@ -23,21 +23,31 @@ namespace AuthenticationService
             configurationBuilder.AddJsonFile("appsettings.json", optional: false);
             configurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
             configuration = configurationBuilder.Build();
-        
-            var webCertificateConfig = configuration.GetSection("WebCertificate").Get<CertificateConfigurationData>();
-            var webCertificate = AuthenticationServiceUtils.LoadX509Certificate2(webCertificateConfig);
 
-            var webServerConfig = configuration.GetSection("WebServer").Get<WebServerConfigurationData>();
-            var listenAddr = webServerConfig.Hostname != null && webServerConfig.Hostname == "*"? System.Net.IPAddress.Any : System.Net.IPAddress.Parse(webServerConfig.Hostname);
             return WebHost.CreateDefaultBuilder(args)
             .UseConfiguration(configuration)
             .UseKestrel(server =>
             {
-                server.Listen(
-                    address: listenAddr, 
-                    port: (int)webServerConfig.Port, 
-                    configure: listen => listen.UseHttps(webCertificate)
-                );
+                var bindings = configuration.GetSection("Listen").Get<IEnumerable<WebServerBindingConfigurationData>>();
+                if(bindings == null || bindings.Count() == 0)
+                {
+                    throw new Exception("Listen: configuration section contains invalid configuration data. No binding defined.");
+                }                
+                foreach(var binding in bindings)
+                {
+                    switch(binding.Protocol.ToUpper())
+                    {
+                        case "HTTP":
+                            server.Listen(System.Net.IPAddress.Parse(binding.Ip), (int)binding.Port);
+                            break;
+                        case "HTTPS":
+                            var certificateInfo = AuthenticationServiceUtils.LoadX509Certificate2(binding.Certificate);                        
+                            server.Listen(System.Net.IPAddress.Parse(binding.Ip), (int)binding.Port, listen => listen.UseHttps(certificateInfo));
+                            break;
+                        default:
+                            throw new NotSupportedException("Listen: invalid binding protocol. Accepted values are either \"HTTP\" or \"HTTPS\"");
+                    }
+                }
             })
             .UseStartup<Startup>();
         }
