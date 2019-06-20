@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationService", "Au
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationService.SmokeTests", "AuthenticationService.SmokeTests\AuthenticationService.SmokeTests.csproj", "{D2D2990F-5CA3-4426-B225-D6B22A0E6B07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService.IntegrationTests", "AuthenticationService.IntegrationTests\AuthenticationService.IntegrationTests.csproj", "{7912460F-D61F-47C4-9451-9610834BB633}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D2D2990F-5CA3-4426-B225-D6B22A0E6B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2D2990F-5CA3-4426-B225-D6B22A0E6B07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2D2990F-5CA3-4426-B225-D6B22A0E6B07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7912460F-D61F-47C4-9451-9610834BB633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7912460F-D61F-47C4-9451-9610834BB633}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7912460F-D61F-47C4-9451-9610834BB633}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7912460F-D61F-47C4-9451-9610834BB633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
