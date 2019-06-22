@@ -24,7 +24,7 @@ The service runs into a Docker container. To deploy to your local Docker server 
 ```
 AWS_PROFILE=eimpresa-automation \
 AWS_REGION=eu-west-1 \
-TEST_CONFIG=$(pwd)/config/dev/appsettings.dev.json \
+TEST_CONFIG=$(pwd)/config/dev/appsettings.json \
 ./run-tests.sh *.IntegrationTests.csproj
 ```
 
