@@ -37,7 +37,7 @@ namespace AuthenticationService
                     certificatesStore = new FileCertificateStore(Directory.GetCurrentDirectory());
                     break;
             }
-            ICertificatesProvider certificatesProvider = new CertificateProvider(certificatesStore, secretsStore);
+            ICertificatesProvider certificatesProvider = new CertificatesProvider(certificatesStore, secretsStore);
             services.AddSingleton<ICertificatesProvider>(certificatesProvider);
 
             var builder = services.AddIdentityServer()

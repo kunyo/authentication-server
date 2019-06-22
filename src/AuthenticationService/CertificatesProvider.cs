@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace AuthenticationService
 {
-    public class CertificateProvider : ICertificatesProvider
+    public class CertificatesProvider : ICertificatesProvider
     {
         private readonly ICertificateStore certificatesStore;
         private readonly ISecretsStore secretsStore;
 
-        public CertificateProvider(ICertificateStore certificatesStore, ISecretsStore secretsStore)
+        public CertificatesProvider(ICertificateStore certificatesStore, ISecretsStore secretsStore)
         {
             this.certificatesStore = certificatesStore;
             this.secretsStore = secretsStore;
