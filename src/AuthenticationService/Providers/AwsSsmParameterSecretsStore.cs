@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,7 +15,7 @@ namespace AuthenticationService.Providers
     {
         public string ParameterStore { get; set; }
     }
-    
+
     public class AwsSsmParameterSecretsStore : ISecretsStore
     {
         private readonly AmazonSimpleSystemsManagementClient awsSsmClient;
@@ -50,19 +51,22 @@ namespace AuthenticationService.Providers
 
         private async Task<IDictionary<string, string>> LoadSecrets(string parameterStoreArn)
         {
-            var res = await awsSsmClient.GetParametersByPathAsync(new GetParametersByPathRequest
+            GetParametersByPathResponse response;
+            try
             {
-                Path = parameterStoreArn,
-                WithDecryption = true
-            });
-
-            if (res.HttpStatusCode != HttpStatusCode.OK)
+                response = await awsSsmClient.GetParametersByPathAsync(new GetParametersByPathRequest
+                {
+                    Path = parameterStoreArn,
+                    WithDecryption = true
+                });
+            }
+            catch (HttpRequestException exception)
             {
-                throw new Exception($"Could not load secrets: request failed with unexpected http status code: {(int)res.HttpStatusCode} {res.HttpStatusCode}");
+                throw new Exception($"Could not load secrets from paramete store. See inner exception. Parameter store was: {parameterStoreArn}", exception);
             }
 
             var result = new Dictionary<string, string>();
-            foreach (var p in res.Parameters)
+            foreach (var p in response.Parameters)
             {
                 Console.WriteLine($"FULL_NAME {p.Name} NAME {p.Name.Substring(parameterStoreArn.Length)} VALUE {p.Value}");
                 result.Add(p.Name.Substring(parameterStoreArn.Length), p.Value);
