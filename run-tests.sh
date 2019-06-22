@@ -1,12 +1,20 @@
 #!/bin/sh
-set -x
-CONTAINER_NAME="authentication-service"
-TEST_ENVIRONMENT="$1"
-TEST_PROJECT=$(realpath ./src/AuthenticationService.SmokeTests/AuthenticationService.SmokeTests.csproj)
+set -e
 
-if [ -z "$TEST_ENVIRONMENT" ]; then
-    TEST_ENVIRONMENT="local"
+TEST_FILTER="$1"
+if [ -z "$TEST_FILTER" ]; then TEST_FILTER="*.UnitTests.csproj"; fi
+
+SOURCE_DIR=$(realpath ./src/)
+
+ran_count=0
+for f in $(find "$SOURCE_DIR" -type f -name "$TEST_FILTER"); do
+    dotnet test $f || true;
+    ran_count=$((ran_count + 1))
+done
+
+if [ $ran_count -eq 0 ]; then
+    echo "No test project found in source dir: $SOURCE_DIR"
+    exit 1
 fi
 
-TEST_ENVIRONMENT=$TEST_ENVIRONMENT dotnet test $TEST_PROJECT
 exit 0
