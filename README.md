@@ -13,6 +13,28 @@ The service runs into a Docker container. To deploy to your local Docker server 
 ./deploy.sh
 ```
 
+## Test
+
+### Unit Tests
+```
+./run-tests.sh
+```
+
+### Integration Tests
+```
+AWS_PROFILE=eimpresa-automation \
+AWS_REGION=eu-west-1 \
+TEST_CONFIG=$(pwd)/config/dev/appsettings.dev.json \
+./run-tests.sh *.IntegrationTests.csproj
+```
+
+### Smoke Tests
+```
+TEST_CONFIG=$(pwd)/config/local/appsettings.local.json \
+./run-tests.sh *.SmokeTests.csproj
+```
+
+
 ## Configuration
 
 #### 1. Create a certification authority.
