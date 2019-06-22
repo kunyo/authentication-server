@@ -68,7 +68,6 @@ namespace AuthenticationService.Providers
             var result = new Dictionary<string, string>();
             foreach (var p in response.Parameters)
             {
-                Console.WriteLine($"FULL_NAME {p.Name} NAME {p.Name.Substring(parameterStoreArn.Length)} VALUE {p.Value}");
                 result.Add(p.Name.Substring(parameterStoreArn.Length), p.Value);
             }
 
