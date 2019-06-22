@@ -17,7 +17,6 @@ test -n "$ENV" || (>&2 echo "Usage: $0 <environment name>"; exit 1)
 test -f "$SIGNING_CREDENTIAL_PATH" || (>&2 echo "Certificate not found $SIGNING_CREDENTIAL_PATH"; exit 1)
 test -f "$WEB_CERTIFICATE_PATH" || (>&2 echo "Certificate not found $WEB_CERTIFICATE_PATH"; exit 1)
 test -n "$AWS_PROFILE" || (>&2 echo "AWS_PROFILE environment variable must be defined."; exit 1)
-test -n "$AWS_REGION" || (>&2 echo "AWS_REGION environment variable must be defined."; exit 1)
 
 signing_credential_data=$(cat $SIGNING_CREDENTIAL_PATH | gzip | base64 -w 0)
 signing_credential_pwd=$($PASSBIN show /eimpresa/$ENV/authentication-service/signing-credential-pwd)
