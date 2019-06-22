@@ -1,11 +1,4 @@
 using AuthenticationService.Providers;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace AuthenticationService.IntegrationTests.Providers
@@ -20,12 +13,16 @@ namespace AuthenticationService.IntegrationTests.Providers
             this.secretsStore = new AwsSsmParameterSecretsStore(new AwsSsmParameterSecretStoreConfiguration { ParameterStore = TestConfiguration.Current.ParameterStore });
         }
 
-        [Fact]
-        public async void MustGetServiceConfiguration()
+        [Theory]
+        [InlineData("/signing-credential-data")]
+        [InlineData("/signing-credential-password")]
+        [InlineData("/web-certificate-data")]
+        [InlineData("/web-certificate-password")]
+        public async void MustNotContainEmptySecrets(string paramName)
         {
-            var secret = await this.secretsStore.GetSecret("/web-certificate");
+            var secret = await this.secretsStore.GetSecret(paramName);
 
-            Assert.Equal("NOVALUE", secret);
+            Assert.True(!string.IsNullOrWhiteSpace(secret));
         }
     }
 }
