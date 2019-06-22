@@ -30,7 +30,7 @@ TEST_CONFIG=$(pwd)/config/dev/appsettings.json \
 
 ### Smoke Tests
 ```
-TEST_CONFIG=$(pwd)/config/local/appsettings.local.json \
+TEST_ENVIRONMENT=local \
 ./run-tests.sh *.SmokeTests.csproj
 ```
 
