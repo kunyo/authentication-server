@@ -51,7 +51,7 @@ cd scripts
 
 #### 3. Create a ssl certificate for the webserver
 ```
-./new-pkcs12-certificate.sh --common-name=local-api.xp3riment.net --signing-key=./root-ca/root-ca.key --signing-cert=./root-ca/root-ca.crt
+./new-pkcs12-certificate.sh --common-name=local-auth.xp3riment.net --signing-key=./root-ca/root-ca.key --signing-cert=./root-ca/root-ca.crt
 ```
 
 #### 4. Copy the newly created certificates to the web content directory
