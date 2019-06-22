@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using AuthenticationService.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +22,24 @@ namespace AuthenticationService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var secretsConfig = Configuration.GetSection("Secrets");
+            var secretsProviderName = secretsConfig.GetValue<string>("Provider");
+            ICertificateStore certificatesStore;
+            ISecretsStore secretsStore = null;
+            switch (secretsProviderName)
+            {
+                case "aws_ssm_parameter":
+                    secretsStore = new AwsSsmParameterSecretsStore(secretsConfig.Get<AwsSsmParameterSecretStoreConfiguration>());
+                    certificatesStore = new SecretsCertificateStore(secretsStore);
+                    break;
+                default:
+                    secretsStore = new PassThruSecretStore();
+                    certificatesStore = new FileCertificateStore(Directory.GetCurrentDirectory());
+                    break;
+            }
+            ICertificatesProvider certificatesProvider = new CertificateProvider(certificatesStore, secretsStore);
+            services.AddSingleton<ICertificatesProvider>(certificatesProvider);
+
             var builder = services.AddIdentityServer()
                             .AddInMemoryIdentityResources(AuthenticationServiceConfiguration.GetIdentityResources())
                             .AddInMemoryApiResources(AuthenticationServiceConfiguration.GetApis())
@@ -29,9 +50,12 @@ namespace AuthenticationService
 
             // Configure the certificate used to signin OAUTH2 Tokens
             var signingCredentialConfig = Configuration.GetSection("SigningCredential").Get<CertificateConfigurationData>();
-            var signingCredential = AuthenticationServiceUtils.LoadX509Certificate2(signingCredentialConfig);
+
+            var getSigningCredentialTask = certificatesProvider.GetCertificateAsync(signingCredentialConfig.Path, signingCredentialConfig.Password);
+            getSigningCredentialTask.Wait();
+            var signingCredential = getSigningCredentialTask.Result;
             builder.AddSigningCredential(signingCredential);
-            
+
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
