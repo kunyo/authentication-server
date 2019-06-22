@@ -12,7 +12,7 @@ if [ -n "$CONTAINER_ID" ]; then
 fi
  
 CONTAINER_ID=$(docker create --name "$CONTAINER_NAME" --publish 44331:44331 --publish 44332:44332 "$IMAGE_FAMILY")
-docker cp "$(pwd)/config/local/local-api.xp3riment.net/local-api.xp3riment.net.pfx" "$CONTAINER_ID:/app/"
+docker cp "$(pwd)/config/local/local-auth.xp3riment.net/local-auth.xp3riment.net.pfx" "$CONTAINER_ID:/app/"
 docker cp "$(pwd)/config/local/signing-credential/signing-credential.pfx" "$CONTAINER_ID:/app/"
 docker start "$CONTAINER_NAME"
 echo "Container started: $CONTAINER_ID"
