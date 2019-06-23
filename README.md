@@ -44,6 +44,9 @@ cd scripts
 ```
 
 #### 2. Add the certification authority to the trusted certificates dir
+The certificate needs to be added to the local trusted certificates list.
+Make sure to give it a .crt extension, else it won't work.
+
 On Debian hosts:
 ```
 sudo cp root-ca.crt /usr/local/share/ca-certificates/
@@ -70,6 +73,5 @@ cd scripts
 
 ```
 cp ./local-api.xp3riment.net/local-api.xp3riment.net.pfx ./../src/AuthenticationService/
-
 cp ./signing-credential/signing-credential.pfx ./../src/AuthenticationService/
 ```
