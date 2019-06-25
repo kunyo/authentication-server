@@ -3,8 +3,10 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AuthenticationService.Providers;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,7 +46,8 @@ namespace AuthenticationService
                             .AddInMemoryIdentityResources(AuthenticationServiceConfiguration.GetIdentityResources())
                             .AddInMemoryApiResources(AuthenticationServiceConfiguration.GetApis())
                             .AddInMemoryClients(AuthenticationServiceConfiguration.GetClients())
-                            .AddResourceOwnerValidator<ResourceOwnerValidator>();
+                            .AddResourceOwnerValidator<ResourceOwnerValidator>()
+                            .AddCorsPolicyService<CorsPolicyService>();
 
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
@@ -56,7 +59,7 @@ namespace AuthenticationService
             var signingCredential = getSigningCredentialTask.Result;
             builder.AddSigningCredential(signingCredential);
 
-            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            // services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,8 +77,7 @@ namespace AuthenticationService
 
             app.UseHttpsRedirection();
             app.UseIdentityServer();
-
-            //app.UseMvc();
+            // app.UseMvc();
         }
     }
 }
